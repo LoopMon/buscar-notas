@@ -9,17 +9,18 @@ load_dotenv()
 
 def buscar_notas():
     sessao = requests.Session()
+    # Chaves devem ser iguais às do formulário de login
     login_data = {"matricula": os.getenv("MATRICULA"), "password": os.getenv("SENHA")}
     sessao.post(os.getenv("URL"), data=login_data)
 
     resposta = sessao.get(os.getenv("URL_BOLETIM"))
     sopa = BeautifulSoup(resposta.text, "html.parser")
 
+    # Encontrar todas as tabelas (no meu caso, existem múltiplas tabelas)
     tabelas = sopa.select(".row .conteudo-body .table-responsive")
 
-    linhas = tabelas[1].select("tr")[1:]
-
     for tabela in tabelas:
+        # Pular o cabeçalho da tabela
         linhas = tabela.select("tr")[1:]
         for linha in linhas:
             colunas = linha.select("td")
